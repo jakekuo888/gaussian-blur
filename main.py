@@ -12,22 +12,33 @@ def gauss(x, y, std):
 
 def set_kern(dim, std):
     if(dim%2 != 1):
-        raise ValueError("You number isn't skibidi enough")
+        raise ValueError("Dims aren't skibidi enough")
     arr = np.zeros((dim, dim))
     c = dim//2
     for x in range(dim):
         for y in range(dim):
             arr[x][y] = gauss(x-c, y-c, std)
-    arr /= arr.sum() #no idea what this does tbh
+    arr /= arr.sum()
     return arr
 
-def calc(pos, image, kern):
-    x = pos[0], y = pos[1]
-    image[x][y]
+def calc(x, y, image, kern, dim):
+    img_x = len(image) #x
+    img_y = len(image[0]) #y
+    imgdata = np.zeros((dim, dim))
+    d2 = dim//2
+    for i in range(dim):
+        for j in range(dim):
+            img_i = x+i-d2
+            img_j = y+j-d2
+            
+            img_i = min(max(img_i, 0), img_x-1)
+            img_j = min(max(img_j, 0), img_y-1)
+
+            imgdata[i][j] = image[img_i][img_j]
 
 def scan(image, dim, std):
     kern = set_kern(dim, std)
     #this has to be a np array
-    for x in range(image):
-        for y in range(image[x]):
-            calc()
+    for x in range(dim):
+        for y in range(dim):
+            calc(x, y, image, kern, dim)
