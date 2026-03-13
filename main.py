@@ -1,9 +1,10 @@
+# REALLY [HYPERLINK_BLOCKED] SLOW VERSION.
 import cv2 as cv
 import numpy as np
 import sys
 
 img_p = 'imges/delete.png'
-img = cv.imread(img_p)
+img = cv.imread(img_p, cv.IMREAD_GRAYSCALE)
 
 def gauss(x, y, std):
     n1 = np.exp(-(x**2+y**2)/(2*(std**2)))
@@ -30,15 +31,22 @@ def calc(x, y, image, kern, dim):
         for j in range(dim):
             img_i = x+i-d2
             img_j = y+j-d2
-            
+
             img_i = min(max(img_i, 0), img_x-1)
             img_j = min(max(img_j, 0), img_y-1)
 
             imgdata[i][j] = image[img_i][img_j]
+    
+    return np.sum(imgdata * kern)
 
 def scan(image, dim, std):
     kern = set_kern(dim, std)
+    g_img = np.zeros((len(image), len(image[0])), dtype=np.uint8)
     #this has to be a np array
-    for x in range(dim):
-        for y in range(dim):
-            calc(x, y, image, kern, dim)
+    for x in range(len(image)):
+        for y in range(len(image[0])):
+            g_img[x][y] = calc(x, y, image, kern, dim)
+    return g_img
+
+g_img = scan(img, 15, 3)
+cv.imwrite('imges/out.png', g_img)
